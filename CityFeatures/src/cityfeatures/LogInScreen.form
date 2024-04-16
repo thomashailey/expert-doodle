@@ -42,6 +42,8 @@
                   <Group type="103" groupAlignment="1" attributes="0">
                       <Group type="102" attributes="0">
                           <EmptySpace max="32767" attributes="0"/>
+                          <Component id="loginCreateAccountBtn" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Component id="loginSubmitBtn" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Group type="102" attributes="0">
@@ -75,7 +77,10 @@
                       <Component id="loginPasswordField" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                  <Component id="loginSubmitBtn" min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="loginSubmitBtn" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="loginCreateAccountBtn" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
                   <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -93,6 +98,9 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="loginUserNameField">
+          <Events>
+            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="loginUserNameFieldFocusLost"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="loginSubmitBtn">
           <Properties>
@@ -103,6 +111,14 @@
           </Events>
         </Component>
         <Component class="javax.swing.JPasswordField" name="loginPasswordField">
+        </Component>
+        <Component class="javax.swing.JButton" name="loginCreateAccountBtn">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Create Account"/>
+          </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="loginCreateAccountBtnMouseClicked"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>

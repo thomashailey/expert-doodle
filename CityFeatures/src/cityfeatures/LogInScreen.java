@@ -4,6 +4,9 @@
  */
 package cityfeatures;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -52,6 +55,7 @@ public class LogInScreen extends javax.swing.JFrame {
         loginUserNameField = new javax.swing.JTextField();
         loginSubmitBtn = new javax.swing.JButton();
         loginPasswordField = new javax.swing.JPasswordField();
+        loginCreateAccountBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -59,10 +63,23 @@ public class LogInScreen extends javax.swing.JFrame {
 
         jLabel2.setText("Password:");
 
+        loginUserNameField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                loginUserNameFieldFocusLost(evt);
+            }
+        });
+
         loginSubmitBtn.setText("Submit");
         loginSubmitBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 loginSubmitBtnMouseClicked(evt);
+            }
+        });
+
+        loginCreateAccountBtn.setText("Create Account");
+        loginCreateAccountBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                loginCreateAccountBtnMouseClicked(evt);
             }
         });
 
@@ -74,6 +91,8 @@ public class LogInScreen extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(loginCreateAccountBtn)
+                        .addGap(18, 18, 18)
                         .addComponent(loginSubmitBtn))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(31, 31, 31)
@@ -98,7 +117,9 @@ public class LogInScreen extends javax.swing.JFrame {
                     .addComponent(jLabel2)
                     .addComponent(loginPasswordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(loginSubmitBtn)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(loginSubmitBtn)
+                    .addComponent(loginCreateAccountBtn))
                 .addGap(15, 15, 15))
         );
 
@@ -128,15 +149,20 @@ public class LogInScreen extends javax.swing.JFrame {
                 try {
                     con = db.OpenConnection();
 
-                    sql = String.format("SELECT Password FROM user_data WHERE UserID = \'%s\'", username);
+                    sql = String.format("SELECT Password FROM user_data WHERE Username = \'%s\'", username);
                     stmt = con.prepareStatement(sql);
 
                     result = stmt.executeQuery();
 
                     while (result.next()) {
-                        if (password.equals(result.getString("Password"))) {
+                        String passResult = result.getString("Password");
+                        if (password.equals(passResult)) {
+                            System.out.println("Successfully provide UN and Pass");
                             this.setVisible(false);
                             new MainPage().setVisible(true);
+                        }
+                        else {
+                            JOptionPane.showMessageDialog(null, "Incorrect Username or Password.");
                         }
                     }
             } catch (SQLException ex) {
@@ -147,6 +173,59 @@ public class LogInScreen extends javax.swing.JFrame {
         }
        
     }//GEN-LAST:event_loginSubmitBtnMouseClicked
+
+    private void loginUserNameFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_loginUserNameFieldFocusLost
+        // TODO add your handling code here:
+        // add username to file
+        try {
+            File userIdFile = new File("currentuser.txt");
+            if (userIdFile.createNewFile()) {
+                System.out.println("File created: " + userIdFile.getName());
+            } else {
+                System.out.println("File already exists.");
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+        
+        try {
+            FileWriter myWriter = new FileWriter("currentuser.txt");
+            myWriter.write(loginUserNameField.getText());
+            myWriter.close();
+            System.out.println("Successfully wrote to the file.");
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_loginUserNameFieldFocusLost
+
+    private void loginCreateAccountBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_loginCreateAccountBtnMouseClicked
+        // TODO add your handling code here:
+        username = loginUserNameField.getText();
+        password = loginPasswordField.getText();
+        
+        if (username.equals("") || password.equals("")) {
+            JOptionPane.showMessageDialog(null, "Please provide both username and password.");
+        }
+        else {
+                try {
+                    con = db.OpenConnection();
+
+                    sql = String.format("INSERT INTO user_data (Username, Password) VALUES (\'%s\', \'%s\');", username, password);
+                    stmt = con.prepareStatement(sql);
+
+                    stmt.execute();
+
+                    this.setVisible(false);
+                    new MainPage().setVisible(true);
+                } catch (SQLException ex) {
+                    Logger.getLogger(LogInScreen.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(LogInScreen.class.getName()).log(Level.SEVERE, null, ex);
+                }
+        }
+    }//GEN-LAST:event_loginCreateAccountBtnMouseClicked
 
     /**
      * @param args the command line arguments
@@ -187,6 +266,7 @@ public class LogInScreen extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JButton loginCreateAccountBtn;
     private javax.swing.JPasswordField loginPasswordField;
     private javax.swing.JButton loginSubmitBtn;
     private javax.swing.JTextField loginUserNameField;
